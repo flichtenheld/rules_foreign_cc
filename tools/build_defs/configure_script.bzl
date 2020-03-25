@@ -3,7 +3,7 @@ load(":framework.bzl", "ForeignCcDeps", "get_foreign_cc_dep")
 
 def create_configure_script(
         workspace_name,
-        target_os,
+        target_gnu,
         tools,
         flags,
         root,
@@ -13,7 +13,8 @@ def create_configure_script(
         configure_command,
         deps,
         inputs,
-        configure_in_place):
+        configure_in_place,
+        configure_target):
     env_vars_string = get_env_vars(workspace_name, tools, flags, user_vars, deps, inputs)
 
     script = []
@@ -31,9 +32,15 @@ def create_configure_script(
         script += ["##symlink_contents_to_dir## $$EXT_BUILD_ROOT$$/{} $$BUILD_TMPDIR$$".format(root)]
         configure_path = "$$BUILD_TMPDIR$$/{}".format(configure_command)
 
-    script += ["{env_vars} \"{configure}\" --prefix=$$BUILD_TMPDIR$$/$$INSTALL_PREFIX$$ {user_options}".format(
+    target_options = ''
+    if configure_target and target_gnu:
+        target_options = "--target={target_gnu} --host={target_gnu}".format(
+            target_gnu = target_gnu)
+
+    script += ["{env_vars} \"{configure}\" --prefix=$$BUILD_TMPDIR$$/$$INSTALL_PREFIX$$ {target_options} {user_options}".format(
         env_vars = env_vars_string,
         configure = configure_path,
+        target_options = target_options,
         user_options = " ".join(user_options),
     )]
     return "\n".join(script)

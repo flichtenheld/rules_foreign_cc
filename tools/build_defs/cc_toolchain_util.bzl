@@ -358,6 +358,14 @@ def get_flags_info(ctx, link_output_file = None):
         assemble = _add_if_needed(flags.assemble, copts),
     )
 
+def get_target_gnu(ctx):
+    """ Returns target_gnu_system_name from cc_toolchain
+    Args:
+        ctx - rule context
+    """
+    cc_toolchain_ = find_cpp_toolchain(ctx)
+    return cc_toolchain_.target_gnu_system_name
+
 def _add_if_needed(arr, add_arr):
     filtered = []
     for to_add in add_arr:

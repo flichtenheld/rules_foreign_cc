@@ -12,6 +12,7 @@ load(
     "//tools/build_defs:cc_toolchain_util.bzl",
     "get_flags_info",
     "get_tools_info",
+    "get_target_gnu",
     "is_debug_mode",
 )
 load(":configure_script.bzl", "create_configure_script")
@@ -37,13 +38,13 @@ def _create_configure_script(configureParameters):
 
     tools = get_tools_info(ctx)
     flags = get_flags_info(ctx)
+    target_gnu = get_target_gnu(ctx)
 
     define_install_prefix = "export INSTALL_PREFIX=\"" + _get_install_prefix(ctx) + "\"\n"
 
     configure = create_configure_script(
         workspace_name = ctx.workspace_name,
-        # as default, pass execution OS as target OS
-        target_os = os_name(ctx),
+        target_gnu = target_gnu,
         tools = tools,
         flags = flags,
         root = root,
@@ -54,6 +55,7 @@ def _create_configure_script(configureParameters):
         deps = ctx.attr.deps,
         inputs = inputs,
         configure_in_place = ctx.attr.configure_in_place,
+	configure_target = ctx.attr.configure_target,
     )
     return "\n".join([define_install_prefix, configure])
 
@@ -80,6 +82,9 @@ def _attrs():
         # Set to True if 'configure' should be invoked in place, i.e. from its enclosing
         # directory.
         "configure_in_place": attr.bool(mandatory = False, default = False),
+	# Set to False if 'configure' should be invoked without --target
+	# based on toolchain's target_gnu_name
+	"configure_target": attr.bool(mandatory = False, default = True),
     })
     return attrs
 
