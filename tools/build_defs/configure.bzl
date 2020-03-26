@@ -55,7 +55,7 @@ def _create_configure_script(configureParameters):
         deps = ctx.attr.deps,
         inputs = inputs,
         configure_in_place = ctx.attr.configure_in_place,
-	configure_target = ctx.attr.configure_target,
+        configure_target = ctx.attr.configure_target,
     )
     return "\n".join([define_install_prefix, configure])
 
@@ -82,9 +82,9 @@ def _attrs():
         # Set to True if 'configure' should be invoked in place, i.e. from its enclosing
         # directory.
         "configure_in_place": attr.bool(mandatory = False, default = False),
-	# Set to False if 'configure' should be invoked without --target
-	# based on toolchain's target_gnu_name
-	"configure_target": attr.bool(mandatory = False, default = True),
+        # Set to False if 'configure' should be invoked without --target
+        # based on toolchain's target_gnu_name
+        "configure_target": attr.bool(mandatory = False, default = True),
     })
     return attrs
 
